@@ -9,6 +9,10 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
+  
+  fonts.packages = with pkgs; [
+    fira-code
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot = {
@@ -94,6 +98,10 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  environment.sessionVariables = {
+    XDG_CONFIG_HOME = "$HOME/.config";
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -113,6 +121,29 @@
     tofi
     pulsemixer
     vscode
+    bitwarden
+    signald
+    home-assistant
+    vesktop
+    steam
+    btop
+    htop
+    hyprpaper
+    lxappearance
+    curl
+    unzip
+    zip
+    dunst
+    nautilus
+    onedrive
+    zsh
+    php
+    cliphist
+    wl-clipboard
+    ags
+    unipicker
+    toilet
+    fastfetch
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
