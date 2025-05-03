@@ -14,6 +14,9 @@
     fira-code
   ];
 
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+
   # Bootloader.
   boot.loader.systemd-boot = {
   	enable = true;
@@ -108,8 +111,12 @@
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     neovim
+    lua
+    lua-language-server
+    hollywood
     alacritty
     firefox
+    tree
     prismlauncher
     rink
     spotify
@@ -122,7 +129,10 @@
     pulsemixer
     vscode
     bitwarden
+    usbutils
     signald
+    file
+    libnotify
     home-assistant
     vesktop
     steam
@@ -133,17 +143,32 @@
     curl
     unzip
     zip
-    dunst
     nautilus
     onedrive
     zsh
     php
     cliphist
     wl-clipboard
+    bluez
     ags
     unipicker
+    cmatrix
     toilet
+    warp
+    dunst
     fastfetch
+    lsd
+    friture
+    hypridle
+    brightnessctl
+    zapzap
+    arduino-ide
+    jamesdsp
+    thefuck
+    nmap
+    pkgs.libgccjit
+    pkgs.gnumake42
+    dotnetCorePackages.sdk_9_0_1xx
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -180,5 +205,17 @@
 	enable = true;
 	xwayland.enable = true;
 	withUWSM = true;
+  };
+
+  services.mysql = {
+    enable = true;
+    package = pkgs.mariadb;
+  };
+
+  services.cron = {
+    enable = true;
+    systemCronJobs = [
+      "* * * * * martijn ~/.battLowBorderScript.sh"
+    ];
   };
 }
