@@ -11,8 +11,19 @@
     ];
   
   fonts.packages = with pkgs; [
+    (nerdfonts.override { fonts = [ "FiraCode" ]; })
     fira-code
+    font-awesome
+
+    openmoji-color
   ];
+
+  fonts.fontconfig = {
+      defaultFonts = {
+        emoji = [ "OpenMoji Color" ];
+      };
+    };
+
 
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
@@ -20,7 +31,7 @@
   # Bootloader.
   boot.loader.systemd-boot = {
   	enable = true;
-	configurationLimit = 3;
+  	configurationLimit = 3;
   };
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -54,14 +65,18 @@
 
   services.displayManager.sddm.wayland.enable = true;
 
-  programs.nix-ld = {
-	enable = true;
-	libraries = with pkgs; [
-		zlib
-		libgcc
-	];
-  };
-  security.polkit.enable = true;	
+    programs.nix-ld = {
+  enable = true;
+  libraries = with pkgs; [
+    zlib
+    glibc
+    glibc.dev
+	libgcc
+        gcc.cc
+  ];
+};
+
+    security.polkit.enable = true;	
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -121,55 +136,84 @@
     rink
     spotify
     stow
+    glib
+    zulu8
     git
     openssl
     libreoffice
+    pkgs.llvmPackages_18.clangUseLLVM
     thunderbird
+    ungoogled-chromium
+    google-chrome
     tofi
     pulsemixer
+    efibootmgr
     vscode
     bitwarden
     usbutils
+    pavucontrol
     signald
     file
+    nwg-look
+    pkgs.emacsPackages.outlook
     libnotify
     home-assistant
     vesktop
     steam
+    iwd
+    iwgtk
+    adwaita-icon-theme
+    pamixer
+    jq
     btop
     htop
     hyprpaper
+    hyprlock
     lxappearance
     curl
+    rustdesk
     unzip
     zip
     nautilus
     onedrive
     zsh
+    grimblast
     php
+    figma-linux
+    icu
     cliphist
     wl-clipboard
     bluez
+    #kicad
     ags
+    simulide
     unipicker
+    rofi
+    wofi
     cmatrix
+    yazi
+    pulseaudio
     toilet
     warp
     dunst
     fastfetch
+    python314
+    yt-dlp
     lsd
     friture
     hypridle
     brightnessctl
     zapzap
     arduino-ide
+    xorg.libxkbfile
     jamesdsp
     thefuck
     nmap
     pkgs.libgccjit
     pkgs.gnumake42
     dotnetCorePackages.sdk_9_0_1xx
-  ];
+    python313Packages.pandas
+];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -207,6 +251,11 @@
 	withUWSM = true;
   };
 
+  programs.waybar = {
+    enable = true;
+    package = pkgs.waybar;
+  };
+
   services.mysql = {
     enable = true;
     package = pkgs.mariadb;
@@ -217,5 +266,19 @@
     systemCronJobs = [
       "* * * * * martijn ~/.battLowBorderScript.sh"
     ];
+  };
+
+  services.ollama = {
+    enable = true;
+    acceleration = "cuda";
+    # Optional: preload models, see https://ollama.com/library
+    # loadModels = [ "qwen3:8b" ];
+  };
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 }
