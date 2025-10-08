@@ -137,20 +137,24 @@
     spotify
     stow
     glib
+    gobuster
     zulu8
     git
     openssl
     libreoffice
+    nodejs
     pkgs.llvmPackages_18.clangUseLLVM
     thunderbird
     ungoogled-chromium
     google-chrome
     tofi
+    signal-cli
     pulsemixer
     efibootmgr
     vscode
     bitwarden
     usbutils
+    pkg-config
     pavucontrol
     signald
     file
@@ -158,24 +162,31 @@
     pkgs.emacsPackages.outlook
     libnotify
     home-assistant
+    glib
     vesktop
     steam
+    wireguard-tools
+    dirb
     iwd
     iwgtk
     adwaita-icon-theme
     pamixer
     jq
+    meson
     btop
     htop
     hyprpaper
     hyprlock
+    hyprcursor
     lxappearance
     curl
     rustdesk
+    cmake
     unzip
     zip
     nautilus
     onedrive
+    bibata-cursors
     zsh
     grimblast
     php
@@ -206,6 +217,7 @@
     zapzap
     arduino-ide
     xorg.libxkbfile
+    jetbrains.rider
     jamesdsp
     thefuck
     nmap
@@ -268,14 +280,7 @@
     ];
   };
 
-  services.ollama = {
-    enable = true;
-    acceleration = "cuda";
-    # Optional: preload models, see https://ollama.com/library
-    # loadModels = [ "qwen3:8b" ];
-  };
-
-  programs.steam = {
+   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
