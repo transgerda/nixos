@@ -212,6 +212,8 @@
     fontforge
     mkcert
     nginx
+    postman
+    ngrok
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -264,6 +266,8 @@
     enable = true;
     systemCronJobs = [
       "* * * * * martijn ~/.battLowBorderScript.sh"
+      "0 15 * * 1,3,5,7 martijn cd /home/martijn/.nixrc; git commit -am 'Cron scheduled commit on: $(date '+\%Y-\%m-\%d \%H:\%M'; git push;"
+      "0 15 * * 1,3,5,7 martijn cd /home/martijn/dotfile; git commit -am 'Cron scheduled commit on: $(date '+\%Y-\%m-\%d \%H:\%M'; git push;"
     ];
   };
 
