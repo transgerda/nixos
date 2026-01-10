@@ -11,7 +11,7 @@
     ];
   
   fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "FiraCode" ]; })
+    nerd-fonts.fira-code
     fira-code
     font-awesome
 
@@ -65,7 +65,10 @@
 
   services.displayManager.sddm.wayland.enable = true;
 
-    programs.nix-ld = {
+  services.tailscale.enable = true;
+  services.tailscale.useRoutingFeatures = "client";
+
+programs.nix-ld = {
   enable = true;
   libraries = with pkgs; [
     zlib
@@ -82,7 +85,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -125,11 +128,14 @@
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
-    neovim
     lua
     lua-language-server
     hollywood
     alacritty
+    kitty
+    ripgrep
+    fd
+    fish
     firefox
     tree
     prismlauncher
@@ -140,6 +146,7 @@
     gobuster
     zulu8
     git
+    lazygit
     openssl
     libreoffice
     nodejs
@@ -148,15 +155,13 @@
     ungoogled-chromium
     google-chrome
     tofi
-    signal-cli
     pulsemixer
     efibootmgr
     vscode
-    bitwarden
+    bitwarden-desktop
     usbutils
     pkg-config
     pavucontrol
-    signald
     file
     nwg-look
     pkgs.emacsPackages.outlook
@@ -181,6 +186,7 @@
     lxappearance
     curl
     rustdesk
+    rustc
     cmake
     unzip
     zip
@@ -219,11 +225,11 @@
     xorg.libxkbfile
     jetbrains.rider
     jamesdsp
-    thefuck
+    pay-respects
     nmap
     pkgs.libgccjit
     pkgs.gnumake42
-    dotnetCorePackages.sdk_9_0_1xx
+    dotnet-sdk_10
     python313Packages.pandas
 ];
 
@@ -268,6 +274,18 @@
     package = pkgs.waybar;
   };
 
+  programs.fish.enable = true;
+
+  programs.bash = {
+  interactiveShellInit = ''
+    if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+        then
+        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+        exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+    fi
+    '';
+    };
+
   services.mysql = {
     enable = true;
     package = pkgs.mariadb;
@@ -276,8 +294,13 @@
   services.cron = {
     enable = true;
     systemCronJobs = [
-      "* * * * * martijn ~/.battLowBorderScript.sh"
+      "* * * * * * martijn ~/.battLowBorderScript.sh"
     ];
+  };
+
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
   };
 
    programs.steam = {
