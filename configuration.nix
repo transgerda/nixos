@@ -68,16 +68,30 @@
   services.tailscale.enable = true;
   services.tailscale.useRoutingFeatures = "client";
 
-programs.nix-ld = {
-  enable = true;
-  libraries = with pkgs; [
-    zlib
-    glibc
-    glibc.dev
-	libgcc
-        gcc.cc
-  ];
-};
+  services.zerotierone = {
+      enable = true;
+      joinNetworks = [
+        "68bea79acf00b7b7"
+      ];
+    };
+
+
+    programs.nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        zlib
+        glibc
+        glibc.dev
+        libgcc
+            gcc.cc
+      ];
+    };
+
+    virtualisation.docker.enable = true;
+
+    services.xserver.videoDrivers = [ "vmware" ];
+
+    virtualisation.vmware.guest.enable = true;
 
     security.polkit.enable = true;	
 
@@ -107,7 +121,7 @@ programs.nix-ld = {
   users.users.martijn = {
     isNormalUser = true;
     description = "martijn";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -121,6 +135,7 @@ programs.nix-ld = {
 
   environment.sessionVariables = {
     XDG_CONFIG_HOME = "$HOME/.config";
+    LD_LIBRARY_PATH = "/run/current-system/sw/lib";
   };
 
   # List packages installed in system profile. To search, run:
@@ -135,9 +150,16 @@ programs.nix-ld = {
     kitty
     ripgrep
     fd
+    fzf
     fish
+    zoxide
+    atuin
     firefox
+    rust-analyzer
+    intelephense
     tree
+    stylua
+    luarocks
     prismlauncher
     rink
     spotify
@@ -159,6 +181,7 @@ programs.nix-ld = {
     efibootmgr
     vscode
     bitwarden-desktop
+    tree-sitter
     usbutils
     pkg-config
     pavucontrol
@@ -205,6 +228,7 @@ programs.nix-ld = {
     ags
     simulide
     unipicker
+    geteduroam-cli
     rofi
     wofi
     cmatrix
@@ -229,8 +253,23 @@ programs.nix-ld = {
     nmap
     pkgs.libgccjit
     pkgs.gnumake42
-    dotnet-sdk_10
+    dotnet-sdk_8
+    icu
+    openssl
     python313Packages.pandas
+    python313Packages.dbus-python
+
+    php84Packages.composer 
+    php84Extensions.pdo 
+    php84Extensions.pdo_mysql
+    laravel
+    ddev
+    mkcert
+
+    jetbrains.rider
+    vscode-extensions.hediet.vscode-drawio
+
+    vmware-workstation
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -289,6 +328,10 @@ programs.nix-ld = {
   services.mysql = {
     enable = true;
     package = pkgs.mariadb;
+  };
+
+  services.phpmyadmin = {
+    enable = true;
   };
 
   services.cron = {
