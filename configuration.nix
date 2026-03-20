@@ -206,6 +206,7 @@
     hyprpaper
     hyprlock
     hyprcursor
+    hyprpanel
     lxappearance
     curl
     rustdesk
@@ -224,6 +225,9 @@
     cliphist
     wl-clipboard
     bluez
+    blueman
+    wlogout
+    swaynotificationcenter
     #kicad
     ags
     simulide
@@ -328,10 +332,6 @@
   services.mysql = {
     enable = true;
     package = pkgs.mariadb;
-  };
-
-  services.phpmyadmin = {
-    enable = true;
   };
 
   services.cron = {
