@@ -226,6 +226,8 @@
     wl-clipboard
     bluez
     blueman
+    cava
+    playerctl
     wlogout
     swaynotificationcenter
     #kicad
