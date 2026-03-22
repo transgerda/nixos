@@ -14,6 +14,7 @@
     nerd-fonts.fira-code
     fira-code
     font-awesome
+    jetbrains-mono
 
     openmoji-color
   ];
