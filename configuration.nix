@@ -25,6 +25,45 @@
       };
     };
 
+   # Enable OpenGL
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
+  # Load nvidia driver for Xorg and Wayland
+  services.xserver.videoDrivers = ["nvidia"];
+
+  hardware.nvidia = {
+
+    # Modesetting is required.
+    modesetting.enable = true;
+
+    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
+    # Enable this if you have graphical corruption issues or application crashes after waking
+    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead 
+    # of just the bare essentials.
+    powerManagement.enable = false;
+
+    # Fine-grained power management. Turns off GPU when not in use.
+    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
+    powerManagement.finegrained = false;
+
+    # Use the NVidia open source kernel module (not to be confused with the
+    # independent third-party "nouveau" open source driver).
+    # Support is limited to the Turing and later architectures. Full list of 
+    # supported GPUs is at: 
+    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
+    # Only available from driver 515.43.04+
+    open = false;
+
+    # Enable the Nvidia settings menu,
+	# accessible via `nvidia-settings`.
+    nvidiaSettings = true;
+
+    # Optionally, you may need to select the appropriate driver version for your specific GPU.
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
 
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
@@ -88,9 +127,11 @@
       ];
     };
 
-    virtualisation.docker.enable = true;
+    virtualisation.docker = {
+      enable = true;
+    };
 
-    services.xserver.videoDrivers = [ "vmware" ];
+    hardware.nvidia-container-toolkit.enable = true;
 
     virtualisation.vmware.guest.enable = true;
 
@@ -122,7 +163,7 @@
   users.users.martijn = {
     isNormalUser = true;
     description = "martijn";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "kvm" "libvirtd" "input" "ydotool" ];
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -145,6 +186,7 @@
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     lua
+    wl-clicker
     lua-language-server
     hollywood
     alacritty
@@ -224,10 +266,16 @@
     figma-linux
     icu
     cliphist
+    cura-appimage
     wl-clipboard
+    copilot-cli
     bluez
     blueman
     cava
+    heroic
+    wine64
+    winetricks
+    mission-center
     playerctl
     wlogout
     swaynotificationcenter
@@ -255,6 +303,7 @@
     arduino-ide
     xorg.libxkbfile
     jetbrains.rider
+    jetbrains.phpstorm
     jamesdsp
     pay-respects
     nmap
@@ -262,6 +311,7 @@
     pkgs.gnumake42
     dotnet-sdk_8
     icu
+    sqlitebrowser
     openssl
     python313Packages.pandas
     python313Packages.dbus-python
@@ -276,7 +326,9 @@
     jetbrains.rider
     vscode-extensions.hediet.vscode-drawio
 
-    vmware-workstation
+    (pkgs.ollama.override { 
+      acceleration = "cuda";
+    })
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -297,6 +349,7 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+  networking.firewall.trustedInterfaces = [ "virbr0" ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -332,6 +385,9 @@
     '';
     };
 
+  services.flatpak.enable = true;
+
+
   services.mysql = {
     enable = true;
     package = pkgs.mariadb;
@@ -342,6 +398,12 @@
     systemCronJobs = [
       "* * * * * * martijn ~/.battLowBorderScript.sh"
     ];
+  };
+
+  services.ollama = {
+    enable = true;
+    package = pkgs.ollama-cuda;
+    # loadModels = [ "codellama:7b" ];
   };
 
   programs.neovim = {
@@ -355,4 +417,9 @@
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
+
+  programs.ydotool.enable = true;
+
+  virtualisation.libvirtd.enable = true;
+  programs.virt-manager.enable = true;
 }
