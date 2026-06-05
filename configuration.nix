@@ -345,11 +345,11 @@
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
   networking.firewall.trustedInterfaces = [ "virbr0" ];
+  networking.firewall.allowedTCPPorts = [ 11434 ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -403,6 +403,7 @@
   services.ollama = {
     enable = true;
     package = pkgs.ollama-cuda;
+    host = "0.0.0.0";
     # loadModels = [ "codellama:7b" ];
   };
 
