@@ -20,10 +20,14 @@
   ];
 
   fonts.fontconfig = {
-      defaultFonts = {
-        emoji = [ "OpenMoji Color" ];
-      };
+    defaultFonts = {
+      emoji = [ "OpenMoji Color" ];
     };
+  };
+
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-39.8.10"
+  ];
 
    # Enable OpenGL
   hardware.graphics = {
@@ -35,33 +39,21 @@
   services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
+    prime = {
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
 
-    # Modesetting is required.
+      amdgpuBusId = "PCI:5:0:0";
+      nvidiaBusId = "PCI:1:0:0";
+    };
+
     modesetting.enable = true;
-
-    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-    # Enable this if you have graphical corruption issues or application crashes after waking
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead 
-    # of just the bare essentials.
     powerManagement.enable = false;
-
-    # Fine-grained power management. Turns off GPU when not in use.
-    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
     powerManagement.finegrained = false;
-
-    # Use the NVidia open source kernel module (not to be confused with the
-    # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of 
-    # supported GPUs is at: 
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
-    # Only available from driver 515.43.04+
     open = false;
-
-    # Enable the Nvidia settings menu,
-	# accessible via `nvidia-settings`.
     nvidiaSettings = true;
-
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
@@ -76,19 +68,16 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "bamilaptop"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.extraHosts = ''
+    0.0.0.0 paradise-s1.battleye.com
+    0.0.0.0 test-s1.battleye.com
+    0.0.0.0 paradiseenhanced-s1.battleye.com
+  '';
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
   networking.networkmanager.enable = true;
 
-  # Set your time zone.
   time.timeZone = "Europe/Amsterdam";
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -215,6 +204,7 @@
     openssl
     libreoffice
     nodejs
+    pm2
     pkgs.llvmPackages_18.clangUseLLVM
     thunderbird
     ungoogled-chromium
@@ -235,13 +225,14 @@
     home-assistant
     glib
     vesktop
-    steam
+    discord
     wireguard-tools
     dirb
     iwd
     iwgtk
     adwaita-icon-theme
     pamixer
+    pyprland
     jq
     meson
     btop
@@ -251,6 +242,7 @@
     hyprcursor
     hyprpanel
     lxappearance
+    vulkan-tools
     curl
     rustdesk
     rustc
@@ -263,12 +255,12 @@
     zsh
     grimblast
     php
+    gparted
     figma-linux
     icu
     cliphist
     cura-appimage
     wl-clipboard
-    copilot-cli
     bluez
     blueman
     cava
@@ -279,7 +271,7 @@
     playerctl
     wlogout
     swaynotificationcenter
-    #kicad
+    kicad
     ags
     simulide
     unipicker
@@ -310,6 +302,7 @@
     pkgs.libgccjit
     pkgs.gnumake42
     dotnet-sdk_8
+    drawio
     icu
     sqlitebrowser
     openssl
@@ -326,9 +319,9 @@
     jetbrains.rider
     vscode-extensions.hediet.vscode-drawio
 
-    (pkgs.ollama.override { 
-      acceleration = "cuda";
-    })
+    # (pkgs.ollama.override { 
+    #   acceleration = "cuda";
+    # })
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -400,24 +393,26 @@
     ];
   };
 
-  services.ollama = {
-    enable = true;
-    package = pkgs.ollama-cuda;
-    host = "0.0.0.0";
-    # loadModels = [ "codellama:7b" ];
-  };
+  # services.ollama = {
+  #   enable = true;
+  #   package = pkgs.ollama-cuda;
+  #   host = "0.0.0.0";
+  #   # loadModels = [ "codellama:7b" ];
+  # };
 
   programs.neovim = {
     enable = true;
     defaultEditor = true;
   };
 
-   programs.steam = {
+ programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
+
+  programs.gamescope.enable = true;
 
   programs.ydotool.enable = true;
 
