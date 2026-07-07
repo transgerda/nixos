@@ -1,15 +1,10 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, inputs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
-  
+  imports = [
+    ./hardware-configuration.nix
+  ];
+
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code
     fira-code
@@ -29,13 +24,11 @@
     "electron-39.8.10"
   ];
 
-   # Enable OpenGL
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
   };
 
-  # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
@@ -57,24 +50,28 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
-  hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+  hardware.bluetooth.enable = true; 
+  hardware.bluetooth.powerOnBoot = true; 
 
-  # Bootloader.
   boot.loader.systemd-boot = {
   	enable = true;
   	configurationLimit = 3;
   };
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "bamilaptop"; # Define your hostname.
+  networking.networkmanager.enable = true;
+
+  networking.hostName = "bamilaptop"; 
+
   networking.extraHosts = ''
     0.0.0.0 paradise-s1.battleye.com
     0.0.0.0 test-s1.battleye.com
     0.0.0.0 paradiseenhanced-s1.battleye.com
   '';
 
-  networking.networkmanager.enable = true;
+  networking.firewall.trustedInterfaces = [ "virbr0" ];
+
+  networking.firewall.allowedTCPPorts = [ 11434 ];
 
   time.timeZone = "Europe/Amsterdam";
 
@@ -97,39 +94,27 @@
   services.tailscale.enable = true;
   services.tailscale.useRoutingFeatures = "client";
 
-  services.zerotierone = {
-      enable = true;
-      joinNetworks = [
-        "68bea79acf00b7b7"
-      ];
-    };
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      zlib
+      glibc
+      glibc.dev
+      libgcc
+      gcc.cc
+    ];
+  };
 
+  virtualisation.docker = {
+    enable = true;
+  };
 
-    programs.nix-ld = {
-      enable = true;
-      libraries = with pkgs; [
-        zlib
-        glibc
-        glibc.dev
-        libgcc
-            gcc.cc
-      ];
-    };
+  hardware.nvidia-container-toolkit.enable = true;
 
-    virtualisation.docker = {
-      enable = true;
-    };
+  security.polkit.enable = true;	
 
-    hardware.nvidia-container-toolkit.enable = true;
-
-    virtualisation.vmware.guest.enable = true;
-
-    security.polkit.enable = true;	
-
-  # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -137,31 +122,14 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.martijn = {
     isNormalUser = true;
     description = "martijn";
-    extraGroups = [ "networkmanager" "wheel" "docker" "kvm" "libvirtd" "input" "ydotool" ];
-    packages = with pkgs; [
-    #  thunderbird
-    ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "kvm" "libvirtd" "input" ];
   };
 
-  # Install firefox.
-  programs.firefox.enable = true;
-
-  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   environment.sessionVariables = {
@@ -169,10 +137,7 @@
     LD_LIBRARY_PATH = "/run/current-system/sw/lib";
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     lua
     wl-clicker
@@ -205,11 +170,8 @@
     libreoffice
     nodejs
     pm2
-    pkgs.llvmPackages_18.clangUseLLVM
     thunderbird
-    ungoogled-chromium
     google-chrome
-    tofi
     pulsemixer
     efibootmgr
     vscode
@@ -222,7 +184,6 @@
     nwg-look
     pkgs.emacsPackages.outlook
     libnotify
-    home-assistant
     glib
     vesktop
     discord
@@ -272,7 +233,6 @@
     wlogout
     swaynotificationcenter
     kicad
-    ags
     simulide
     unipicker
     geteduroam-cli
@@ -315,50 +275,18 @@
     laravel
     ddev
     mkcert
+  ];
 
-    jetbrains.rider
-    vscode-extensions.hediet.vscode-drawio
-
-    # (pkgs.ollama.override { 
-    #   acceleration = "cuda";
-    # })
-];
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-  networking.firewall.trustedInterfaces = [ "virbr0" ];
-  networking.firewall.allowedTCPPorts = [ 11434 ];
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
-	
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
+  programs.firefox.enable = true;
+
   programs.hyprland = {
-	enable = true;
-	xwayland.enable = true;
-	withUWSM = true;
+    enable = true;
+    xwayland.enable = true;
+    withUWSM = true;
   };
 
   programs.waybar = {
@@ -369,17 +297,16 @@
   programs.fish.enable = true;
 
   programs.bash = {
-  interactiveShellInit = ''
-    if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
-        then
-        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-        exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
-    fi
+    interactiveShellInit = ''
+      if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+          then
+          shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+          exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+      fi
     '';
-    };
+  };
 
   services.flatpak.enable = true;
-
 
   services.mysql = {
     enable = true;
@@ -388,17 +315,7 @@
 
   services.cron = {
     enable = true;
-    systemCronJobs = [
-      "* * * * * * martijn ~/.battLowBorderScript.sh"
-    ];
   };
-
-  # services.ollama = {
-  #   enable = true;
-  #   package = pkgs.ollama-cuda;
-  #   host = "0.0.0.0";
-  #   # loadModels = [ "codellama:7b" ];
-  # };
 
   programs.neovim = {
     enable = true;
@@ -407,15 +324,8 @@
 
  programs.steam = {
     enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+    localNetworkGameTransfers.openFirewall = true;
   };
-
-  programs.gamescope.enable = true;
-
-  programs.ydotool.enable = true;
-
-  virtualisation.libvirtd.enable = true;
-  programs.virt-manager.enable = true;
 }
