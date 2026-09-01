@@ -14,15 +14,29 @@
     fzf
     fish
     zoxide
+    unityhub
+    claude-code
     atuin
     rust-analyzer
+    ydotool
     intelephense
+    wakeonlan
     tree
     stylua
     luarocks
-    prismlauncher
+    (prismlauncher.override {
+      additionalLibs = with pkgs; [
+        libXtst
+        libX11
+        libXi
+        libXinerama
+        libXrandr
+        libxkbcommon
+      ];
+    })
     rink
     spotify
+    spotifyd
     stow
     glib
     gobuster
@@ -36,6 +50,10 @@
     pm2
     thunderbird
     google-chrome
+    (pkgs.writeShellScriptBin "steam-run-xt" ''
+      export LD_LIBRARY_PATH="${pkgs.libxt}/lib:$LD_LIBRARY_PATH"
+      exec ${pkgs.steam-run}/bin/steam-run "$@"
+    '')
     pulsemixer
     efibootmgr
     vscode
@@ -70,7 +88,6 @@
     lxappearance
     vulkan-tools
     curl
-    rustdesk
     rustc
     cmake
     unzip
@@ -120,6 +137,7 @@
     brightnessctl
     zapzap
     arduino-ide
+    libXtst
     libxkbfile
     jetbrains.rider
     jetbrains.phpstorm
@@ -141,6 +159,12 @@
     laravel
     ddev
     mkcert
+
+    libXtst
+    libX11
+    libXt
+    libXinerama
+    libxcb
+    libxkbcommon
   ];
 }
-

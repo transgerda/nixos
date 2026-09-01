@@ -5,8 +5,17 @@
     networkmanager.enable = true;
     hostName = "bamilaptop"; 
 
-    firewall.trustedInterfaces = [ "virbr0" ];
-    firewall.allowedTCPPorts = [ 11434 ];
+    firewall = {
+      trustedInterfaces = [ "virbr0" ];
+      allowedTCPPorts = [ 11434 57621 5353 ];
+      allowedUDPPorts = [ 9 ];
+    };
+
+    interfaces = {
+      wlo1 = {
+        wakeOnLan.enable = true;
+      };
+    };
 
     # gta anticheat
     extraHosts = ''

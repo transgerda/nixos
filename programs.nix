@@ -4,6 +4,7 @@
   programs = {
     firefox.enable = true;
     fish.enable = true;
+    ydotool.enable = true;
 
     hyprland = {
       enable = true;
@@ -47,12 +48,13 @@
         libgcc
         gcc.cc
         libxkbcommon
-        libX11
-        libXtst
         libXi
-        libXext
         libXrandr
         glib
+
+        libXtst
+        libX11
+        libXext
       ];
     };
   };
